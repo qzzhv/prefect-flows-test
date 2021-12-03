@@ -9,7 +9,10 @@ import distributed
 import prefect
 from prefect import Flow, Parameter, case, task
 from prefect.executors import DaskExecutor
+from prefect.storage import Git
+from prefect.client import Secret
 import os
+
 
 
 @task(tags=["dask-resource:pix=1"], log_stdout=True)
@@ -138,10 +141,15 @@ def bool_param(param):
     print("res: ", res)
     return res
 
+storage = Git(
+    repo=Secret("GIT_REPO").get(),
+    flow_path=os.path.basename(__file__),
+    repo_host=Secret("GIT_SERVER_HOST").get(),
+)
 
-executor = DaskExecutor()
+executor = DaskExecutor(address=Secret("DASK_SCHEDULER_ADDRESS"))
 
-with Flow("run_pix", executor=executor) as flow_runner_pix:
+with Flow("run_pix", executor=executor, storage=storage) as flow_runner_pix:
     script_path = Parameter("script_path", required=True)
     script_parameters = Parameter("script_parameters", required=False)
     robot_path = Parameter("robot_path", required=False)
