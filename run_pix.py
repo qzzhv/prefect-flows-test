@@ -150,7 +150,7 @@ storage = Git(
     branch_name="master"
 )
 
-executor = DaskExecutor(address=Secret("DASK_SCHEDULER_ADDRESS"))
+executor = DaskExecutor(address=Secret("DASK_SCHEDULER_ADDRESS").get())
 
 with Flow("run_pix", executor=executor, storage=storage) as flow_runner_pix:
     script_path = Parameter("script_path", required=True)
