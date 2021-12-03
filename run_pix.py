@@ -145,6 +145,7 @@ storage = Git(
     repo=Secret("GIT_REPO").get(),
     flow_path=os.path.basename(__file__),
     repo_host=Secret("GIT_SERVER_HOST").get(),
+    use_ssh=False
 )
 
 executor = DaskExecutor(address=Secret("DASK_SCHEDULER_ADDRESS"))
