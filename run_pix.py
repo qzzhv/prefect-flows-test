@@ -1,7 +1,7 @@
 import json
 import re
 import subprocess
-import winreg
+
 from pathlib import Path
 from typing import Any, Optional, Union
 import distributed
@@ -81,6 +81,8 @@ def get_pix_robot_path() -> str:
     Returns:
         str: full path to robot.exe
     """
+    import winreg
+
     key_path = r"\Studio.Document\shell\open\command"
     registry = winreg.ConnectRegistry(None, winreg.HKEY_CLASSES_ROOT)
 
