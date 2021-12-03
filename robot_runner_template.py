@@ -27,4 +27,8 @@ with Flow(f"STARTER_{name}") as flow:
     wait_for_flow_child = wait_for_flow_run(flow_child, raise_final_state=True)
 
 
-flow.register(project_name="pix_robots")
+flow.register(
+    project_name="pix_robots",
+    labels=["prefect"],
+    add_default_labels=False,
+)

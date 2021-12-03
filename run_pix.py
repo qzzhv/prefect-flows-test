@@ -163,11 +163,18 @@ def test():
         "need_gui": False,
     }
 
-    flow_runner_pix.run(parameters=parameters, idempotency_key="one_task_per_day")
+    flow_runner_pix.run(
+        parameters=parameters,
+        idempotency_key="one_task_per_day",
+    )
 
 
 def main():
-    flow_runner_pix.register(project_name="pix_robots", labels=["prefect"])
+    flow_runner_pix.register(
+        project_name="pix_robots",
+        labels=["prefect"],
+        add_default_labels=False,
+    )
 
 
 if __name__ == "__main__":
