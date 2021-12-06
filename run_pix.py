@@ -143,7 +143,7 @@ def bool_param(param):
     print("res: ", res)
     return res
 
-work_dir = Path()
+work_dir = Path().absolute()
 module_path = Path(__file__)
 relative_path = module_path.relative_to(work_dir)
 
