@@ -11,7 +11,7 @@ from prefect import Flow, Parameter, case, task
 from prefect.executors import DaskExecutor
 from prefect.storage import Git
 from prefect.client import Secret
-import os
+
 
 
 
@@ -143,9 +143,13 @@ def bool_param(param):
     print("res: ", res)
     return res
 
+work_dir = Path()
+module_path = Path(__file__)
+relative_path = module_path.relative_to(work_dir)
+
 storage = Git(
     repo=Secret("GIT_REPO").get(),
-    flow_path=os.path.basename(__file__),
+    flow_path=relative_path.as_posix(),
     repo_host=Secret("GIT_SERVER_HOST").get(),
     branch_name="master"
 )
