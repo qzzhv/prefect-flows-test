@@ -46,7 +46,7 @@ with Flow(f"STARTER_{name}", storage=storage) as flow:
     )
     wait_for_flow_child = wait_for_flow_run(
         child_flow_id,
-        raise_final_state=False,
+        raise_final_state=True,
         stream_logs=True,
         stream_states=True,
     )
