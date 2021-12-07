@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from prefect import Flow, task, Parameter
+from prefect import Flow, task
 from prefect.client import Secret
 from prefect.storage import Git
-from prefect.tasks.prefect import create_flow_run, wait_for_flow_run, get_task_run_result
+from prefect.tasks.prefect import create_flow_run, wait_for_flow_run
 
 ### PARAMETERS
 
@@ -15,7 +15,7 @@ labels = ["prefect"]
 # Dependent flow parameters
 run_pix_name = "run_pix"
 run_pix_project_name = "pix_robots"
-run_pix_parameters = {
+parameters = {
     "script_path": r"\\oao\data\.ОАО Сити-Сервис\02 Экономический отдел\RPA\task.pix",
     "script_parameters": {"time": 10},
     "robot_path": None,
@@ -36,20 +36,20 @@ storage = Git(
     branch_name=Secret("GIT_BRANCH").get(),
 )
 
-@task
-def sub_flow(parameters):
-    flow_child = create_flow_run(
+
+with Flow(f"STARTER_{name}", storage=storage) as flow:
+    child_flow_id = create_flow_run(
         flow_name=run_pix_name,
         project_name=run_pix_project_name,
         parameters=parameters,
         run_name=f"RUNNER_{name}",
     )
-    wait_for_flow_child = wait_for_flow_run(flow_child, raise_final_state=True)
-    return flow_child
-
-with Flow(f"STARTER_{name}", storage=storage) as flow:
-    parameters = Parameter("parameters", default=run_pix_parameters)
-    state = sub_flow(parameters)
+    wait_for_flow_child = wait_for_flow_run(
+        child_flow_id,
+        raise_final_state=False,
+        stream_logs=True,
+        stream_states=True,
+    )
 
 flow.register(
     project_name=project_name,
