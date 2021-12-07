@@ -1,18 +1,14 @@
 import json
 import re
 import subprocess
-
 from pathlib import Path
 from typing import Any, Optional, Union
-import distributed
 
 import prefect
 from prefect import Flow, Parameter, case, task
+from prefect.client import Secret
 from prefect.executors import DaskExecutor
 from prefect.storage import Git
-from prefect.client import Secret
-
-
 
 
 @task(tags=["dask-resource:pix=1"], log_stdout=True)
@@ -35,7 +31,7 @@ def run_cmd(cmd: list[str]) -> int:
 
     logger.info(p.stdout)
     logger.error(p.stderr)
-    print(p.stdout)
+
     exit_code = p.returncode
 
     if exit_code != 0:
@@ -130,7 +126,6 @@ def combine_cmd_pix(
         if type(script_parameters) is str:
             cmd.append(f'-p="{script_parameters}"')
         elif type(script_parameters) is dict:
-            # cmd.append(f'-p="{script_parameters.__str__()}"')
             cmd.append("-p=" + json.dumps(script_parameters))
     generated_cmd = " ".join(cmd)
     logger.info(f"{generated_cmd=}")
@@ -140,8 +135,8 @@ def combine_cmd_pix(
 @task
 def bool_param(param):
     res = str(param).lower() in ("yes", "y", "true", "1")
-    print("res: ", res)
     return res
+
 
 work_dir = Path().absolute()
 module_path = Path(__file__)
@@ -151,7 +146,7 @@ storage = Git(
     repo=Secret("GIT_REPO").get(),
     flow_path=relative_path.as_posix(),
     repo_host=Secret("GIT_SERVER_HOST").get(),
-    branch_name="master"
+    branch_name=Secret("GIT_BRANCH").get(),
 )
 
 executor = DaskExecutor(address=Secret("DASK_SCHEDULER_ADDRESS").get())
