@@ -9,6 +9,7 @@ from prefect import Flow, Parameter, case, task
 from prefect.client import Secret
 from prefect.executors import DaskExecutor
 from prefect.storage import Git
+from prefect.tasks.control_flow import merge
 
 
 @task(tags=["dask-resource:pix=1"], log_stdout=True)
@@ -161,9 +162,11 @@ with Flow("run_pix", executor=executor, storage=storage) as flow_runner_pix:
 
     need_gui_cond = bool_param(need_gui)
     with case(need_gui_cond, True):
-        result = run_cmd_w_gui(cmd)
+        result_w_gui = run_cmd_w_gui(cmd)
     with case(need_gui_cond, False):
         result = run_cmd(cmd)
+
+    state = merge(result, result_w_gui)
 
 
 def test():
