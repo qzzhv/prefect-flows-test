@@ -37,7 +37,7 @@ storage = Git(
 )
 
 
-with Flow(f"STARTER_{name}") as flow:
+with Flow(f"STARTER_{name}", storage=storage) as flow:
     flow_child = create_flow_run(
         flow_name=run_pix_name,
         project_name=run_pix_project_name,
