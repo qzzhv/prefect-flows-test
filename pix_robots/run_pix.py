@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 import prefect
+from prefect.engine.results import PrefectResult
 from prefect import Flow, Parameter, case, task
 from prefect.client import Secret
 from prefect.executors import DaskExecutor
@@ -151,7 +152,9 @@ storage = Git(
 
 executor = DaskExecutor(address=Secret("DASK_SCHEDULER_ADDRESS").get())
 
-with Flow("run_pix", executor=executor, storage=storage) as flow_runner_pix:
+with Flow(
+    "run_pix", executor=executor, storage=storage, result=PrefectResult()
+) as flow_runner_pix:
     script_path = Parameter("script_path", required=True)
     script_parameters = Parameter("script_parameters", required=False)
     robot_path = Parameter("robot_path", required=False)
